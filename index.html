@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pokémon GO Typing Quiz 3 — Weak To</title>
+<style>
+:root{
+  --bg1:#fff7ed; --bg2:#eef7ff; --card:#ffffff; --ink:#1b2430; --muted:#5d6876;
+  --accent:#f97316; --accent2:#22c55e; --bad:#ef4444; --soft:#fff1e6; --line:#e5d6c7;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--ink);}
+header{padding:32px 20px 20px;text-align:center}
+header h1{margin:0;font-size:clamp(28px,4vw,46px);letter-spacing:-.04em}
+header p{max-width:900px;margin:12px auto 0;color:var(--muted);font-size:17px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 20px 46px}
+.panel{background:rgba(255,255,255,.80);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 14px 40px rgba(90,60,30,.10);border-radius:28px;padding:22px;margin-bottom:18px}
+.meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+.pill{background:var(--soft);border:1px solid #fed7aa;color:#9a3412;padding:8px 12px;border-radius:999px;font-weight:800;font-size:13px}
+.progress{height:12px;background:#eceff4;border-radius:999px;overflow:hidden;margin:12px 0 0}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:.25s}
+.card{background:var(--card);border:1px solid var(--line);border-radius:28px;box-shadow:0 18px 50px rgba(87,57,28,.12);padding:26px;margin-top:18px}
+.qtop{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.qnum{font-weight:900;color:var(--accent);font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+.score{font-weight:850;color:var(--muted)}
+.question{font-size:26px;line-height:1.25;margin:8px 0 12px;font-weight:900;letter-spacing:-.03em}
+.hint{color:var(--muted);font-weight:650;margin:0 0 20px}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.option{border:2px solid var(--line);background:#fff;border-radius:18px;padding:14px 14px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:.15s;user-select:none;font-weight:800}
+.option:hover{transform:translateY(-1px);border-color:#fdba74;box-shadow:0 8px 22px rgba(90,60,30,.08)}
+.option input{width:18px;height:18px;accent-color:var(--accent)}
+.option.selected{border-color:var(--accent);background:#fff7ed}
+.option.correct{border-color:var(--accent2);background:#ecfdf3}
+.option.wrong{border-color:var(--bad);background:#fff1f2}
+.option.missed{border-color:var(--accent2);background:#f0fdf4;box-shadow:inset 0 0 0 2px rgba(34,197,94,.10)}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+button{border:0;border-radius:16px;padding:13px 18px;font-weight:900;cursor:pointer;font-size:15px}
+.primary{background:linear-gradient(90deg,var(--accent),#ea580c);color:#fff}
+.secondary{background:#e8eef6;color:#243244}
+button:disabled{opacity:.48;cursor:not-allowed}
+.feedback{margin-top:20px;border-radius:20px;padding:16px 18px;display:none}
+.feedback.show{display:block}
+.feedback.good{background:#ecfdf3;border:1px solid #bbf7d0}
+.feedback.review{background:#fff7ed;border:1px solid #fed7aa}
+.feedback h3{margin:0 0 8px;font-size:19px}
+.feedback p{margin:6px 0;color:#374151;line-height:1.45}
+.answerList{margin-top:12px;display:grid;gap:8px}
+.answerItem{background:rgba(255,255,255,.70);border:1px solid rgba(148,163,184,.35);border-radius:14px;padding:10px 12px;font-weight:800}
+.details{margin-top:14px;border-top:1px solid #fed7aa;padding-top:12px}
+.details summary{cursor:pointer;font-weight:900;color:#9a3412}
+.allAnswers{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.tag{border:1px solid #e5e7eb;background:#fff;border-radius:999px;padding:6px 9px;font-size:13px;font-weight:750;color:#374151}
+.small{font-size:13px;color:var(--muted);font-weight:650}
+.end{text-align:center;display:none}
+.end.show{display:block}
+.end h2{font-size:34px;margin:4px 0 8px}
+.footer{margin-top:24px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:620px){.card{padding:20px}.question{font-size:22px}.qtop{flex-direction:column}.options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Pokémon GO Typing Quiz 3</h1>
+  <p><strong>Weak To — Defensive Recognition.</strong><br>
+  Select every mono or dual typing in the options that is weak to the incoming attack type. This quiz was generated from the uploaded Master PvP Typing Spreadsheet logic.</p>
+  <div class="meta">
+    <span class="pill">Mono + dual typings</span>
+    <span class="pill">Select ALL correct answers</span>
+    <span class="pill">Weak means incoming damage &gt; ×1.0</span>
+  </div>
+</header>
+<main class="wrap">
+  <section class="panel">
+    <div class="qtop">
+      <div><div class="qnum" id="progressText">Question 1 of 18</div><div class="progress"><span id="bar"></span></div></div>
+      <div class="score" id="scoreText">Score: 0 / 0</div>
+    </div>
+  </section>
+  <section class="card" id="quizCard">
+    <div class="qnum" id="categoryText">Weak To</div>
+    <div class="question" id="questionText"></div>
+    <p class="hint">Choose every correct option shown. There may be more than one correct answer.</p>
+    <div class="options" id="options"></div>
+    <div class="actions">
+      <button class="primary" id="checkBtn">Check answer</button>
+      <button class="secondary" id="nextBtn" disabled>Next question</button>
+      <button class="secondary" id="restartBtn">Restart</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </section>
+  <section class="card end" id="endCard">
+    <h2>Quiz Complete!</h2>
+    <p id="finalScore"></p>
+    <p class="small">This is a learning quiz — review any missed answers and replay to build memory.</p>
+    <button class="primary" onclick="restartQuiz()">Restart Quiz</button>
+  </section>
+  <div class="footer">Pokémon GO Typing Quiz 3 — Weak To. Generated from the Master PvP Typing Spreadsheet.</div>
+</main>
+<script>
+const QUESTIONS = [{"attackType": "Normal", "prompt": "Select all typings that are weak to Normal attacks.", "options": ["Normal/Water", "None of these typings", "Psychic", "Electric/Dark", "Flying/Steel", "Normal/Fighting", "Electric", "Psychic/Bug", "Fire/Ground", "Fire/Water"], "correctOptions": ["None of these typings"], "allCorrect": ["None of these typings"], "allCorrectCount": 0}, {"attackType": "Fire", "prompt": "Select all typings that are weak to Fire attacks.", "options": ["Bug", "Electric/Ice", "Grass/Ice", "Grass/Fairy", "Bug/Dragon", "Electric", "Fire/Dragon", "Normal", "Fire/Water", "Grass/Psychic"], "correctOptions": ["Bug", "Electric/Ice", "Grass/Ice", "Grass/Fairy", "Grass/Psychic"], "allCorrect": ["Normal/Grass", "Normal/Ice", "Normal/Bug", "Normal/Steel", "Electric/Grass", "Electric/Ice", "Electric/Bug", "Electric/Steel", "Grass", "Grass/Ice", "Grass/Fighting", "Grass/Poison", "Grass/Ground", "Grass/Flying", "Grass/Psychic", "Grass/Bug", "Grass/Ghost", "Grass/Dark", "Grass/Steel", "Grass/Fairy", "Ice", "Ice/Fighting", "Ice/Poison", "Ice/Ground", "Ice/Flying", "Ice/Psychic", "Ice/Bug", "Ice/Ghost", "Ice/Dark", "Ice/Steel", "Ice/Fairy", "Fighting/Bug", "Fighting/Steel", "Poison/Bug", "Poison/Steel", "Ground/Bug", "Ground/Steel", "Flying/Bug", "Flying/Steel", "Psychic/Bug", "Psychic/Steel", "Bug", "Bug/Ghost", "Bug/Dark", "Bug/Steel", "Bug/Fairy", "Ghost/Steel", "Dark/Steel", "Steel", "Steel/Fairy"], "allCorrectCount": 50}, {"attackType": "Water", "prompt": "Select all typings that are weak to Water attacks.", "options": ["Normal/Ground", "Normal", "Poison/Bug", "Ground/Dark", "Flying", "Flying/Rock", "Water/Ground", "Fire/Ice", "Fire", "Water/Poison"], "correctOptions": ["Normal/Ground", "Ground/Dark", "Flying/Rock", "Fire/Ice", "Fire"], "allCorrect": ["Normal/Fire", "Normal/Ground", "Normal/Rock", "Fire", "Fire/Electric", "Fire/Ice", "Fire/Fighting", "Fire/Poison", "Fire/Ground", "Fire/Flying", "Fire/Psychic", "Fire/Bug", "Fire/Rock", "Fire/Ghost", "Fire/Dark", "Fire/Steel", "Fire/Fairy", "Electric/Ground", "Electric/Rock", "Ice/Ground", "Ice/Rock", "Fighting/Ground", "Fighting/Rock", "Poison/Ground", "Poison/Rock", "Ground", "Ground/Flying", "Ground/Psychic", "Ground/Bug", "Ground/Rock", "Ground/Ghost", "Ground/Dark", "Ground/Steel", "Ground/Fairy", "Flying/Rock", "Psychic/Rock", "Bug/Rock", "Rock", "Rock/Ghost", "Rock/Dark", "Rock/Steel", "Rock/Fairy"], "allCorrectCount": 42}, {"attackType": "Electric", "prompt": "Select all typings that are weak to Electric attacks.", "options": ["Flying/Bug", "Water/Flying", "Flying", "Electric", "Water/Electric", "Fire/Water", "Fire/Electric", "Psychic", "Flying/Ghost", "Normal/Electric"], "correctOptions": ["Flying/Bug", "Water/Flying", "Flying", "Fire/Water", "Flying/Ghost"], "allCorrect": ["Normal/Water", "Normal/Flying", "Fire/Water", "Fire/Flying", "Water", "Water/Ice", "Water/Fighting", "Water/Poison", "Water/Flying", "Water/Psychic", "Water/Bug", "Water/Rock", "Water/Ghost", "Water/Dark", "Water/Steel", "Water/Fairy", "Ice/Flying", "Fighting/Flying", "Poison/Flying", "Flying", "Flying/Psychic", "Flying/Bug", "Flying/Rock", "Flying/Ghost", "Flying/Dark", "Flying/Steel", "Flying/Fairy"], "allCorrectCount": 27}, {"attackType": "Grass", "prompt": "Select all typings that are weak to Grass attacks.", "options": ["Grass/Fairy", "Fighting/Rock", "Water", "Psychic/Rock", "Grass/Dark", "Grass/Fighting", "Water/Rock", "Ground/Ghost", "Electric", "Grass"], "correctOptions": ["Fighting/Rock", "Water", "Psychic/Rock", "Water/Rock", "Ground/Ghost"], "allCorrect": ["Normal/Water", "Normal/Ground", "Normal/Rock", "Water", "Water/Electric", "Water/Ice", "Water/Fighting", "Water/Ground", "Water/Psychic", "Water/Rock", "Water/Ghost", "Water/Dark", "Water/Fairy", "Electric/Ground", "Electric/Rock", "Ice/Ground", "Ice/Rock", "Fighting/Ground", "Fighting/Rock", "Ground", "Ground/Psychic", "Ground/Rock", "Ground/Ghost", "Ground/Dark", "Ground/Fairy", "Psychic/Rock", "Rock", "Rock/Ghost", "Rock/Dark", "Rock/Fairy"], "allCorrectCount": 30}, {"attackType": "Ice", "prompt": "Select all typings that are weak to Ice attacks.", "options": ["Ground", "Ice/Bug", "Psychic", "Flying/Fairy", "Steel", "Grass/Rock", "Ground/Dark", "Water/Ground", "Ice/Fairy", "Ground/Bug"], "correctOptions": ["Ground", "Flying/Fairy", "Grass/Rock", "Ground/Dark", "Ground/Bug"], "allCorrect": ["Normal/Grass", "Normal/Ground", "Normal/Flying", "Normal/Dragon", "Electric/Grass", "Electric/Ground", "Electric/Flying", "Electric/Dragon", "Grass", "Grass/Fighting", "Grass/Poison", "Grass/Ground", "Grass/Flying", "Grass/Psychic", "Grass/Bug", "Grass/Rock", "Grass/Ghost", "Grass/Dragon", "Grass/Dark", "Grass/Fairy", "Fighting/Ground", "Fighting/Flying", "Fighting/Dragon", "Poison/Ground", "Poison/Flying", "Poison/Dragon", "Ground", "Ground/Flying", "Ground/Psychic", "Ground/Bug", "Ground/Rock", "Ground/Ghost", "Ground/Dragon", "Ground/Dark", "Ground/Fairy", "Flying", "Flying/Psychic", "Flying/Bug", "Flying/Rock", "Flying/Ghost", "Flying/Dragon", "Flying/Dark", "Flying/Fairy", "Psychic/Dragon", "Bug/Dragon", "Rock/Dragon", "Ghost/Dragon", "Dragon", "Dragon/Dark", "Dragon/Fairy"], "allCorrectCount": 50}, {"attackType": "Fighting", "prompt": "Select all typings that are weak to Fighting attacks.", "options": ["Water", "Fighting/Ground", "Ice/Rock", "Ice/Dark", "Fighting/Ghost", "Fire", "Ice/Dragon", "Normal", "Ground/Ghost", "Electric/Steel"], "correctOptions": ["Ice/Rock", "Ice/Dark", "Ice/Dragon", "Normal", "Electric/Steel"], "allCorrect": ["Normal", "Normal/Fire", "Normal/Water", "Normal/Electric", "Normal/Grass", "Normal/Ice", "Normal/Fighting", "Normal/Ground", "Normal/Rock", "Normal/Dragon", "Normal/Dark", "Normal/Steel", "Fire/Ice", "Fire/Rock", "Fire/Dark", "Fire/Steel", "Water/Ice", "Water/Rock", "Water/Dark", "Water/Steel", "Electric/Ice", "Electric/Rock", "Electric/Dark", "Electric/Steel", "Grass/Ice", "Grass/Rock", "Grass/Dark", "Grass/Steel", "Ice", "Ice/Fighting", "Ice/Ground", "Ice/Rock", "Ice/Dragon", "Ice/Dark", "Ice/Steel", "Fighting/Rock", "Fighting/Dark", "Fighting/Steel", "Ground/Rock", "Ground/Dark", "Ground/Steel", "Rock", "Rock/Dragon", "Rock/Dark", "Rock/Steel", "Dragon/Dark", "Dragon/Steel", "Dark", "Dark/Steel", "Steel"], "allCorrectCount": 50}, {"attackType": "Poison", "prompt": "Select all typings that are weak to Poison attacks.", "options": ["Normal/Grass", "Electric/Grass", "Fire/Grass", "Fairy", "Electric", "Psychic/Dragon", "Dragon/Fairy", "Poison/Ground", "Poison/Steel", "Ghost"], "correctOptions": ["Normal/Grass", "Electric/Grass", "Fire/Grass", "Fairy", "Dragon/Fairy"], "allCorrect": ["Normal/Grass", "Normal/Fairy", "Fire/Grass", "Fire/Fairy", "Water/Grass", "Water/Fairy", "Electric/Grass", "Electric/Fairy", "Grass", "Grass/Ice", "Grass/Fighting", "Grass/Flying", "Grass/Psychic", "Grass/Bug", "Grass/Dragon", "Grass/Dark", "Grass/Fairy", "Ice/Fairy", "Fighting/Fairy", "Flying/Fairy", "Psychic/Fairy", "Bug/Fairy", "Dragon/Fairy", "Dark/Fairy", "Fairy"], "allCorrectCount": 25}, {"attackType": "Ground", "prompt": "Select all typings that are weak to Ground attacks.", "options": ["Fire/Water", "Electric", "Bug", "Water/Ground", "Ground/Dragon", "Poison/Ground", "Dragon", "Fire/Fighting", "Ground/Flying", "Normal/Fire"], "correctOptions": ["Fire/Water", "Electric", "Poison/Ground", "Fire/Fighting", "Normal/Fire"], "allCorrect": ["Normal/Fire", "Normal/Electric", "Normal/Poison", "Normal/Rock", "Normal/Steel", "Fire", "Fire/Water", "Fire/Electric", "Fire/Ice", "Fire/Fighting", "Fire/Poison", "Fire/Ground", "Fire/Psychic", "Fire/Rock", "Fire/Ghost", "Fire/Dragon", "Fire/Dark", "Fire/Steel", "Fire/Fairy", "Water/Electric", "Water/Poison", "Water/Rock", "Water/Steel", "Electric", "Electric/Ice", "Electric/Fighting", "Electric/Poison", "Electric/Ground", "Electric/Psychic", "Electric/Rock", "Electric/Ghost", "Electric/Dragon", "Electric/Dark", "Electric/Steel", "Electric/Fairy", "Ice/Poison", "Ice/Rock", "Ice/Steel", "Fighting/Poison", "Fighting/Rock", "Fighting/Steel", "Poison", "Poison/Ground", "Poison/Psychic", "Poison/Rock", "Poison/Ghost", "Poison/Dragon", "Poison/Dark", "Poison/Steel", "Poison/Fairy", "Ground/Rock", "Ground/Steel", "Psychic/Rock", "Psychic/Steel", "Rock", "Rock/Ghost", "Rock/Dragon", "Rock/Dark", "Rock/Steel", "Rock/Fairy", "Ghost/Steel", "Dragon/Steel", "Dark/Steel", "Steel", "Steel/Fairy"], "allCorrectCount": 65}, {"attackType": "Flying", "prompt": "Select all typings that are weak to Flying attacks.", "options": ["Dark", "Grass/Ice", "Flying/Rock", "Fire/Flying", "Ghost/Dark", "Bug", "Ground", "Grass/Fighting", "Fire/Bug", "Fire/Grass"], "correctOptions": ["Grass/Ice", "Bug", "Grass/Fighting", "Fire/Bug", "Fire/Grass"], "allCorrect": ["Normal/Grass", "Normal/Fighting", "Normal/Bug", "Fire/Grass", "Fire/Fighting", "Fire/Bug", "Water/Grass", "Water/Fighting", "Water/Bug", "Grass", "Grass/Ice", "Grass/Fighting", "Grass/Poison", "Grass/Ground", "Grass/Flying", "Grass/Psychic", "Grass/Bug", "Grass/Ghost", "Grass/Dragon", "Grass/Dark", "Grass/Fairy", "Ice/Fighting", "Ice/Bug", "Fighting", "Fighting/Poison", "Fighting/Ground", "Fighting/Flying", "Fighting/Psychic", "Fighting/Bug", "Fighting/Ghost", "Fighting/Dragon", "Fighting/Dark", "Fighting/Fairy", "Poison/Bug", "Ground/Bug", "Flying/Bug", "Psychic/Bug", "Bug", "Bug/Ghost", "Bug/Dragon", "Bug/Dark", "Bug/Fairy"], "allCorrectCount": 42}, {"attackType": "Psychic", "prompt": "Select all typings that are weak to Psychic attacks.", "options": ["Water/Fighting", "Water", "Electric/Fighting", "Poison/Rock", "Grass", "Psychic/Steel", "Fighting/Poison", "Poison", "Electric/Psychic", "Fire/Dragon"], "correctOptions": ["Water/Fighting", "Electric/Fighting", "Poison/Rock", "Fighting/Poison", "Poison"], "allCorrect": ["Normal/Fighting", "Normal/Poison", "Fire/Fighting", "Fire/Poison", "Water/Fighting", "Water/Poison", "Electric/Fighting", "Electric/Poison", "Grass/Fighting", "Grass/Poison", "Ice/Fighting", "Ice/Poison", "Fighting", "Fighting/Poison", "Fighting/Ground", "Fighting/Flying", "Fighting/Bug", "Fighting/Rock", "Fighting/Ghost", "Fighting/Dragon", "Fighting/Fairy", "Poison", "Poison/Ground", "Poison/Flying", "Poison/Bug", "Poison/Rock", "Poison/Ghost", "Poison/Dragon", "Poison/Fairy"], "allCorrectCount": 29}, {"attackType": "Bug", "prompt": "Select all typings that are weak to Bug attacks.", "options": ["Normal/Dark", "Ground/Psychic", "Grass/Dragon", "Normal/Bug", "Psychic", "Bug/Rock", "Water/Psychic", "Electric/Fighting", "Flying", "Rock"], "correctOptions": ["Normal/Dark", "Ground/Psychic", "Grass/Dragon", "Psychic", "Water/Psychic"], "allCorrect": ["Normal/Grass", "Normal/Psychic", "Normal/Dark", "Water/Grass", "Water/Psychic", "Water/Dark", "Electric/Grass", "Electric/Psychic", "Electric/Dark", "Grass", "Grass/Ice", "Grass/Ground", "Grass/Psychic", "Grass/Bug", "Grass/Rock", "Grass/Dragon", "Grass/Dark", "Ice/Psychic", "Ice/Dark", "Ground/Psychic", "Ground/Dark", "Psychic", "Psychic/Bug", "Psychic/Rock", "Psychic/Dragon", "Psychic/Dark", "Bug/Dark", "Rock/Dark", "Dragon/Dark", "Dark"], "allCorrectCount": 30}, {"attackType": "Rock", "prompt": "Select all typings that are weak to Rock attacks.", "options": ["Ground/Rock", "Normal", "Grass/Bug", "Flying/Bug", "Poison/Flying", "Ice", "Electric/Dragon", "Rock", "Water/Bug", "Ghost"], "correctOptions": ["Grass/Bug", "Flying/Bug", "Poison/Flying", "Ice", "Water/Bug"], "allCorrect": ["Normal/Fire", "Normal/Ice", "Normal/Flying", "Normal/Bug", "Fire", "Fire/Water", "Fire/Electric", "Fire/Grass", "Fire/Ice", "Fire/Poison", "Fire/Flying", "Fire/Psychic", "Fire/Bug", "Fire/Rock", "Fire/Ghost", "Fire/Dragon", "Fire/Dark", "Fire/Fairy", "Water/Ice", "Water/Flying", "Water/Bug", "Electric/Ice", "Electric/Flying", "Electric/Bug", "Grass/Ice", "Grass/Flying", "Grass/Bug", "Ice", "Ice/Poison", "Ice/Flying", "Ice/Psychic", "Ice/Bug", "Ice/Rock", "Ice/Ghost", "Ice/Dragon", "Ice/Dark", "Ice/Fairy", "Poison/Flying", "Poison/Bug", "Flying", "Flying/Psychic", "Flying/Bug", "Flying/Rock", "Flying/Ghost", "Flying/Dragon", "Flying/Dark", "Flying/Fairy", "Psychic/Bug", "Bug", "Bug/Rock", "Bug/Ghost", "Bug/Dragon", "Bug/Dark", "Bug/Fairy"], "allCorrectCount": 54}, {"attackType": "Ghost", "prompt": "Select all typings that are weak to Ghost attacks.", "options": ["Poison/Fairy", "Fighting", "Rock", "Rock/Ghost", "Ghost", "Grass/Psychic", "Ground/Ghost", "Normal/Ghost", "Ground/Psychic", "Ghost/Dark"], "correctOptions": ["Rock/Ghost", "Ghost", "Grass/Psychic", "Ground/Ghost", "Ground/Psychic"], "allCorrect": ["Fire/Psychic", "Fire/Ghost", "Water/Psychic", "Water/Ghost", "Electric/Psychic", "Electric/Ghost", "Grass/Psychic", "Grass/Ghost", "Ice/Psychic", "Ice/Ghost", "Fighting/Psychic", "Fighting/Ghost", "Poison/Psychic", "Poison/Ghost", "Ground/Psychic", "Ground/Ghost", "Flying/Psychic", "Flying/Ghost", "Psychic", "Psychic/Bug", "Psychic/Rock", "Psychic/Ghost", "Psychic/Dragon", "Psychic/Steel", "Psychic/Fairy", "Bug/Ghost", "Rock/Ghost", "Ghost", "Ghost/Dragon", "Ghost/Steel", "Ghost/Fairy"], "allCorrectCount": 31}, {"attackType": "Dragon", "prompt": "Select all typings that are weak to Dragon attacks.", "options": ["Grass", "Dragon", "Fighting/Dragon", "Rock", "Grass/Dragon", "Electric/Ghost", "Water/Dragon", "Dragon/Fairy", "Ground/Dragon", "Dragon/Steel"], "correctOptions": ["Dragon", "Fighting/Dragon", "Grass/Dragon", "Water/Dragon", "Ground/Dragon"], "allCorrect": ["Normal/Dragon", "Fire/Dragon", "Water/Dragon", "Electric/Dragon", "Grass/Dragon", "Ice/Dragon", "Fighting/Dragon", "Poison/Dragon", "Ground/Dragon", "Flying/Dragon", "Psychic/Dragon", "Bug/Dragon", "Rock/Dragon", "Ghost/Dragon", "Dragon", "Dragon/Dark"], "allCorrectCount": 16}, {"attackType": "Dark", "prompt": "Select all typings that are weak to Dark attacks.", "options": ["Normal/Dark", "Ghost", "Dark", "Grass/Ghost", "Psychic/Bug", "Psychic/Ghost", "Electric/Ghost", "Bug", "Normal", "Dark/Steel"], "correctOptions": ["Ghost", "Grass/Ghost", "Psychic/Bug", "Psychic/Ghost", "Electric/Ghost"], "allCorrect": ["Normal/Psychic", "Normal/Ghost", "Fire/Psychic", "Fire/Ghost", "Water/Psychic", "Water/Ghost", "Electric/Psychic", "Electric/Ghost", "Grass/Psychic", "Grass/Ghost", "Ice/Psychic", "Ice/Ghost", "Poison/Psychic", "Poison/Ghost", "Ground/Psychic", "Ground/Ghost", "Flying/Psychic", "Flying/Ghost", "Psychic", "Psychic/Bug", "Psychic/Rock", "Psychic/Ghost", "Psychic/Dragon", "Psychic/Steel", "Bug/Ghost", "Rock/Ghost", "Ghost", "Ghost/Dragon", "Ghost/Steel"], "allCorrectCount": 29}, {"attackType": "Steel", "prompt": "Select all typings that are weak to Steel attacks.", "options": ["Ice", "Bug/Fairy", "Ghost/Steel", "Ground/Rock", "Flying", "Flying/Rock", "Normal/Ground", "Ice/Ground", "Normal", "Fire/Steel"], "correctOptions": ["Ice", "Bug/Fairy", "Ground/Rock", "Flying/Rock", "Ice/Ground"], "allCorrect": ["Normal/Ice", "Normal/Rock", "Normal/Fairy", "Grass/Ice", "Grass/Rock", "Grass/Fairy", "Ice", "Ice/Fighting", "Ice/Poison", "Ice/Ground", "Ice/Flying", "Ice/Psychic", "Ice/Bug", "Ice/Rock", "Ice/Ghost", "Ice/Dragon", "Ice/Dark", "Ice/Fairy", "Fighting/Rock", "Fighting/Fairy", "Poison/Rock", "Poison/Fairy", "Ground/Rock", "Ground/Fairy", "Flying/Rock", "Flying/Fairy", "Psychic/Rock", "Psychic/Fairy", "Bug/Rock", "Bug/Fairy", "Rock", "Rock/Ghost", "Rock/Dragon", "Rock/Dark", "Rock/Fairy", "Ghost/Fairy", "Dragon/Fairy", "Dark/Fairy", "Fairy"], "allCorrectCount": 39}, {"attackType": "Fairy", "prompt": "Select all typings that are weak to Fairy attacks.", "options": ["Dark", "Rock/Fairy", "Poison", "Normal/Fighting", "Ground/Steel", "Ice/Dragon", "Bug/Dark", "Water", "Grass/Dark", "Ice/Fairy"], "correctOptions": ["Dark", "Normal/Fighting", "Ice/Dragon", "Bug/Dark", "Grass/Dark"], "allCorrect": ["Normal/Fighting", "Normal/Dragon", "Normal/Dark", "Water/Fighting", "Water/Dragon", "Water/Dark", "Electric/Fighting", "Electric/Dragon", "Electric/Dark", "Grass/Fighting", "Grass/Dragon", "Grass/Dark", "Ice/Fighting", "Ice/Dragon", "Ice/Dark", "Fighting", "Fighting/Ground", "Fighting/Flying", "Fighting/Psychic", "Fighting/Bug", "Fighting/Rock", "Fighting/Ghost", "Fighting/Dragon", "Fighting/Dark", "Fighting/Fairy", "Ground/Dragon", "Ground/Dark", "Flying/Dragon", "Flying/Dark", "Psychic/Dragon", "Psychic/Dark", "Bug/Dragon", "Bug/Dark", "Rock/Dragon", "Rock/Dark", "Ghost/Dragon", "Ghost/Dark", "Dragon", "Dragon/Dark", "Dragon/Fairy", "Dark", "Dark/Fairy"], "allCorrectCount": 42}];
+let index = 0;
+let score = 0;
+let answered = 0;
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const bar = document.getElementById('bar');
+const questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options');
+const feedback = document.getElementById('feedback');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+const quizCard = document.getElementById('quizCard');
+const endCard = document.getElementById('endCard');
+const finalScore = document.getElementById('finalScore');
+function renderQuestion() {
+  const q = QUESTIONS[index];
+  progressText.textContent = `Question ${index+1} of ${QUESTIONS.length}`;
+  scoreText.textContent = `Score: ${score} / ${answered}`;
+  bar.style.width = `${(index/QUESTIONS.length)*100}%`;
+  questionText.textContent = q.prompt;
+  optionsEl.innerHTML = '';
+  feedback.className = 'feedback';
+  feedback.innerHTML = '';
+  checkBtn.disabled = false;
+  nextBtn.disabled = true;
+  q.options.forEach(opt => {
+    const label = document.createElement('label');
+    label.className = 'option';
+    label.dataset.option = opt;
+    label.innerHTML = `<input type="checkbox" value="${opt}"><span>${opt}</span>`;
+    label.addEventListener('click', () => setTimeout(() => label.classList.toggle('selected', label.querySelector('input').checked), 0));
+    optionsEl.appendChild(label);
+  });
+}
+function arraysEqual(a,b) {
+  const A=[...a].sort(); const B=[...b].sort();
+  return A.length===B.length && A.every((v,i)=>v===B[i]);
+}
+function checkAnswer() {
+  const q = QUESTIONS[index];
+  const selected = [...optionsEl.querySelectorAll('input:checked')].map(x=>x.value);
+  const correctSet = new Set(q.correctOptions);
+  let correctSelected = 0, wrongSelected = 0, missed = 0;
+  [...optionsEl.children].forEach(label => {
+    const opt = label.dataset.option;
+    const picked = label.querySelector('input').checked;
+    label.querySelector('input').disabled = true;
+    if (correctSet.has(opt) && picked) { label.classList.add('correct'); correctSelected++; }
+    else if (!correctSet.has(opt) && picked) { label.classList.add('wrong'); wrongSelected++; }
+    else if (correctSet.has(opt) && !picked) { label.classList.add('missed'); missed++; }
+  });
+  const perfect = arraysEqual(selected, q.correctOptions);
+  answered++;
+  if (perfect) score++;
+  scoreText.textContent = `Score: ${score} / ${answered}`;
+  const correctList = q.correctOptions.map(x=>`<div class="answerItem">✅ ${x}</div>`).join('');
+  const allList = q.allCorrect.map(x=>`<span class="tag">${x}</span>`).join('');
+  const allText = q.allCorrectCount === 0 ? 'There are no typings weak to this attack type in the master data.' : `Full back-end answer list for ${q.attackType} weaknesses (${q.allCorrectCount} typings)`;
+  feedback.className = `feedback show ${perfect ? 'good' : 'review'}`;
+  feedback.innerHTML = `
+    <h3>${perfect ? '✅ Correct!' : '🧠 Review this one'}</h3>
+    <p><strong>${q.attackType}</strong> attacks are super effective against the correct typings shown in this question, meaning those typings are weak to ${q.attackType} attacks.</p>
+    <p><strong>Your result:</strong> ${correctSelected} correct selected, ${wrongSelected} incorrect selected, ${missed} missed.</p>
+    <div class="answerList">${correctList}</div>
+    <details class="details"><summary>${allText}</summary><div class="allAnswers">${allList}</div></details>
+  `;
+  checkBtn.disabled = true;
+  nextBtn.disabled = false;
+}
+function nextQuestion() {
+  index++;
+  if (index >= QUESTIONS.length) {
+    bar.style.width = '100%';
+    quizCard.style.display = 'none';
+    endCard.classList.add('show');
+    finalScore.innerHTML = `<strong>Final Score:</strong> ${score} / ${answered}`;
+  } else { renderQuestion(); }
+}
+function restartQuiz() {
+  index=0; score=0; answered=0;
+  quizCard.style.display = 'block';
+  endCard.classList.remove('show');
+  renderQuestion();
+}
+checkBtn.addEventListener('click', checkAnswer);
+nextBtn.addEventListener('click', nextQuestion);
+restartBtn.addEventListener('click', restartQuiz);
+renderQuestion();
+</script>
+</body>
+</html>
