@@ -34,7 +34,7 @@ header p{max-width:900px;margin:12px auto 0;color:var(--muted);font-size:17px;li
 .option.correct{border-color:var(--accent2);background:#ecfdf3}
 .option.wrong{border-color:var(--bad);background:#fff1f2}
 .option.missed{border-color:var(--accent2);background:#f0fdf4;box-shadow:inset 0 0 0 2px rgba(34,197,94,.10)}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center;justify-content:space-between}
 button{border:0;border-radius:16px;padding:13px 18px;font-weight:900;cursor:pointer;font-size:15px}
 .primary{background:linear-gradient(90deg,var(--accent),#ea580c);color:#fff}
 .secondary{background:#e8eef6;color:#243244}
@@ -57,6 +57,9 @@ button:disabled{opacity:.48;cursor:not-allowed}
 .end h2{font-size:34px;margin:4px 0 8px}
 .footer{margin-top:24px;text-align:center;color:var(--muted);font-size:13px}
 @media(max-width:620px){.card{padding:20px}.question{font-size:22px}.qtop{flex-direction:column}.options{grid-template-columns:1fr}}
+.actions-main{display:flex;gap:10px;flex-wrap:wrap}
+.actions-nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+.option.selected-correct{border-color:var(--brand);background:#dbeafe;color:#1e3a8a}
 </style>
 </head>
 <body>
@@ -83,9 +86,15 @@ button:disabled{opacity:.48;cursor:not-allowed}
     <p class="hint">Choose every correct option shown. There may be more than one correct answer.</p>
     <div class="options" id="options"></div>
     <div class="actions">
-      <button class="primary" id="checkBtn">Check answer</button>
-      <button class="secondary" id="nextBtn" disabled>Next question</button>
-      <button class="secondary" id="restartBtn">Restart</button>
+      <div class="actions-main">
+        <button class="primary" id="checkBtn">Check answer</button>
+      </div>
+      <div class="actions-nav">
+        <button class="secondary" id="hintBtn">Hint</button>
+        <button class="secondary" id="prevBtn">Previous question</button>
+        <button class="secondary" id="nextBtn">Next question</button>
+        <button class="secondary" id="restartBtn">Restart</button>
+      </div>
     </div>
     <div class="feedback" id="feedback"></div>
   </section>
@@ -110,6 +119,8 @@ const optionsEl = document.getElementById('options');
 const feedback = document.getElementById('feedback');
 const checkBtn = document.getElementById('checkBtn');
 const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const hintBtn = document.getElementById('hintBtn');
 const restartBtn = document.getElementById('restartBtn');
 const quizCard = document.getElementById('quizCard');
 const endCard = document.getElementById('endCard');
@@ -124,7 +135,7 @@ function renderQuestion() {
   feedback.className = 'feedback';
   feedback.innerHTML = '';
   checkBtn.disabled = false;
-  nextBtn.disabled = true;
+  nextBtn.disabled = false;
   q.options.forEach(opt => {
     const label = document.createElement('label');
     label.className = 'option';
@@ -162,13 +173,32 @@ function checkAnswer() {
   feedback.innerHTML = `
     <h3>${perfect ? '✅ Correct!' : '🧠 Review this one'}</h3>
     <p><strong>${q.attackType}</strong> attacks are super effective against the correct typings shown in this question, meaning those typings are weak to ${q.attackType} attacks.</p>
-    <p><strong>Your result:</strong> ${correctSelected} correct selected, ${wrongSelected} incorrect selected, ${missed} missed.</p>
+    <p><strong>Your result:</strong> ${correctSelected} correct selected, ${wrongSelected} incorrect selected, ${missed} missed.</p><p>Green = correct answer you selected. Red = selected but incorrect. Amber = correct answer missed.</p>
     <div class="answerList">${correctList}</div>
     <details class="details"><summary>${allText}</summary><div class="allAnswers">${allList}</div></details>
   `;
   checkBtn.disabled = true;
   nextBtn.disabled = false;
 }
+
+function showHint() {
+  const q = QUESTIONS[index];
+  const answerCount = Array.isArray(q.correctOptions) ? q.correctOptions.length : 0;
+  const word = answerCount === 1 ? 'answer' : 'answers';
+  const isAre = answerCount === 1 ? 'is' : 'are';
+  const optionWord = answerCount === 1 ? 'option' : 'options';
+  feedback.className = 'feedback show review';
+  feedback.innerHTML = `<h3>💡 Hint</h3>
+    <p>There ${isAre} <strong>${answerCount}</strong> correct ${word} in this question.</p>
+    <p>Select exactly <strong>${answerCount}</strong> ${optionWord}, then press <strong>Check answer</strong>.</p>`;
+}
+
+function previousQuestion() {
+  index--;
+  if (index < 0) index = QUESTIONS.length - 1;
+  renderQuestion();
+}
+
 function nextQuestion() {
   index++;
   if (index >= QUESTIONS.length) {
@@ -186,6 +216,8 @@ function restartQuiz() {
 }
 checkBtn.addEventListener('click', checkAnswer);
 nextBtn.addEventListener('click', nextQuestion);
+prevBtn.addEventListener('click', previousQuestion);
+hintBtn.addEventListener('click', showHint);
 restartBtn.addEventListener('click', restartQuiz);
 renderQuestion();
 </script>
